@@ -1,0 +1,114 @@
+package 백준;
+
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+
+public class 캐슬디펜스_17135 {
+	private static int N;
+	private static int M;
+	private static int D;
+	private static int[][] map;
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		N = sc.nextInt();
+		M = sc.nextInt();
+		D = sc.nextInt();
+
+		map = new int[N][M];
+		position = new int[M];
+
+		for (int i = 0; i < M; i++) {
+			position[i] = i;
+		}
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				map[i][j] = sc.nextInt();
+			}
+		}
+		comb(0,0);
+		
+		System.out.println(max);
+
+	}
+
+	static int[] gongsu = new int[3];
+	static int[] position;
+	static int max = 0;
+
+	static class Node {
+		int r;
+		int c;
+
+		Node(int r, int c) {
+			this.r = r;
+			this.c = c;
+		}
+	}
+
+	// 조합
+	public static void comb(int idx, int sidx) {
+
+		if (idx == 3) {
+			boolean[][] check = new boolean[N][M];
+			int cnt = 0;
+			int die = 0;
+			while (true) {
+				boolean nop = false;
+				Queue<Node> q = new LinkedList<Node>();
+				for (int i = 0; i < gongsu.length; i++) {
+					int d = Integer.MAX_VALUE;
+					int br = Integer.MAX_VALUE, bc = Integer.MAX_VALUE;
+					for (int r = 0; r < N - cnt; r++) {
+						for (int c = 0; c < M; c++) {
+							if (map[r][c] == 1 && !check[r][c]) {
+								nop = true;
+								int a = Math.abs(N - cnt - r) + Math.abs(gongsu[i] - c);
+								if (a < d && a <= D) {
+									d = a;
+									br = r;
+									bc = c;
+								}
+								else if (a <= D && a == d) {
+									d = a;
+									if (bc > c) {
+										br = r;
+										bc = c;
+									}
+								}  
+
+							}
+						}
+					}
+					if (br != Integer.MAX_VALUE)
+						q.add(new Node(br, bc));
+				}
+
+				while (!q.isEmpty()) {
+					Node buf = q.poll();
+					if(check[buf.r][buf.c]== false ) {
+						check[buf.r][buf.c] = true;
+						die++;
+					}
+				}
+
+				if (!nop) {
+					max = Math.max(max, die);
+					break;
+				}
+				cnt++;
+			}
+			return;
+		}
+
+		if(sidx == position.length) {
+			return;
+		}
+		gongsu[idx] = position[sidx];
+		comb(idx + 1, sidx + 1);
+		comb(idx, sidx + 1);
+
+	}
+
+}
