@@ -1,0 +1,103 @@
+package swexpert;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+
+public class 모래성쌓기 {
+	private static int H;
+	private static int W;
+	private static char[][] map;
+
+	static class Node {
+		int i;
+		int j;
+
+		Node(int i, int j) {
+			this.i = i;
+			this.j = j;
+		}
+	}
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		int T = sc.nextInt();
+		for (int tc = 1; tc <= T; tc++) {
+			H = sc.nextInt();
+			W = sc.nextInt();
+			map = new char[H][W];
+
+			for (int i = 0; i < H; i++) {
+				String b = sc.next();
+				for (int j = 0; j < W; j++) {
+					map[i][j] = b.charAt(j);
+				}
+			}
+
+			// 모래 알 기준으로
+			int[] dr = { 0, 0, 1, -1, 1, 1, -1, -1 };
+			int[] dc = { 1, -1, 0, 0, 1, -1, 1, -1 };
+
+			boolean[][] check = new boolean[H][W];
+			int cnt = 0;
+			Queue<Node> q = new LinkedList<>();
+
+			for (int i = 0; i < H; i++) {
+				for (int j = 0; j < W; j++) {
+					if (map[i][j] == '.' && !check[i][j]) {
+						check[i][j] = true;
+						for (int d = 0; d < 8; d++) {
+							int r = i + dr[d];
+							int c = j + dc[d];
+
+							if (r >= 0 && c >= 0 && r < H && c < W) {
+								if (map[r][c] != '.' && map[r][c] != '0') {
+									map[r][c]--;
+								}
+								if(map[r][c] == '0' && !check[r][c]) {
+									q.add(new Node(r,c));
+									check[r][c] = true;
+								}
+
+							}
+						}
+					}
+				}
+				
+			}
+
+			while (!q.isEmpty()) {
+				int size = q.size();
+//				for (int i = 0; i < map.length; i++) {
+//					System.out.println(Arrays.toString(map[i]));
+//				}
+//				System.out.println();
+//				System.out.println(size);
+				for (int z = 0; z < size; z++) {
+
+					Node buf = q.poll();
+					map[buf.i][buf.j] = '.';
+					for (int d = 0; d < 8; d++) {
+						int r = buf.i + dr[d];
+						int c = buf.j + dc[d];
+
+						if (r >= 0 && c >= 0 && r < H && c < W) {
+							if (map[r][c] != '.' && map[r][c] != '0') {
+								map[r][c]--;
+							}
+							if (map[r][c] == '0' && !check[r][c]) {
+								q.add(new Node(r, c));
+								check[r][c] = true;
+							}
+						}
+					}
+
+				}
+				cnt++;
+			}
+			System.out.println("#"+ tc + " " + cnt);
+
+		}
+	}
+}
