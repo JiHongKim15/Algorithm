@@ -1,0 +1,118 @@
+package swexpert;
+
+import java.util.PriorityQueue;
+import java.util.Scanner;
+
+public class 벌꿀채취 {
+	private static int N;
+	private static int M;
+	private static int C;
+	private static int[][] map;
+	private static PriorityQueue<Node> pq;
+
+	static class Node implements Comparable<Node> {
+		int r;
+		int c;
+		int sum;
+
+		Node(int r, int c, int sum) {
+			this.r = r;
+			this.c = c;
+			this.sum = sum;
+		}
+
+		@Override
+		public int compareTo(Node n) {
+			return -(Integer.compare(this.sum, n.sum));
+		}
+	}
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		int T = sc.nextInt();
+		for (int tc = 1; tc <= T; tc++) {
+			N = sc.nextInt();
+			M = sc.nextInt();
+			C = sc.nextInt();
+
+			map = new int[N][N];
+			pq = new PriorityQueue<>();
+
+			for (int i = 0; i < map.length; i++) {
+				for (int j = 0; j < map.length; j++) {
+					map[i][j] = sc.nextInt();
+				}
+			}
+
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					ggul(i, j);
+				}
+			}
+
+			Node m1 = pq.poll();
+			Node m2 = null;
+			while (!pq.isEmpty()) {
+				m2 = pq.poll();
+				if (m2.r != m1.r) {
+					break;
+				} else {
+					if (m1.c < m2.c && m1.c + M >= m2.c) {
+						continue;
+					}else if(m1.c > m2.c && m1.c <= m2.c+M) {
+						continue;
+					}
+					
+				}
+			}
+			
+			int max = m1.sum + m2.sum;
+
+			System.out.println("#" + tc + " " + max);
+			
+
+		} // end tc
+	}// end main
+
+	private static void ggul(int sr, int sc) {
+		boolean ok = true;
+		int[] arr = new int[M];
+		for (int i = 0; i < M; i++) {
+			if (sc + i >= N) {
+				ok = false;
+				break;
+			}
+			
+			arr[i] = map[sr][sc+i];
+			
+//			sum += map[sr][sc + i];
+//			if (sum > C) {
+//				ok = false;
+//				break;
+//			}
+//			mul += (map[sr][sc + i] * map[sr][sc + i]);
+		}
+		
+		int max = 0;
+		for(int i=0; i<(1<<arr.length); i++) {
+			//세개의 원소에 할당된 각 비트가 0인지 1인지 검사
+			//0번째 비트 검사(맨 오른쪽 꺼)
+			int sum = 0;
+			int mul = 0;
+			for(int j=0; j<arr.length; j++) {
+				if((i & (1<<j)) != 0) {
+					sum += arr[j];
+					mul += (arr[j] * arr[j]);
+				}
+			}
+			if (sum <= C) {
+				max = Math.max(mul, max);
+			}
+		}
+
+		if (ok) {
+			pq.add(new Node(sr, sc, max));
+		}
+	}
+
+}// end class
